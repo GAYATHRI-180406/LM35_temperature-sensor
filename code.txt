@@ -1,0 +1,38 @@
+#include <TimerOne.h> // Include TimerOne library
+
+const int sensorPin = A0; // Analog pin connected to LM35
+const int ledPin = 13;    // Onboard LED pin
+
+double temperature;
+int blinkInterval = 500; // Initial blink interval (ms)
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Timer1.initialize(250); // Set timer for initial blink interval
+  Timer1.attachInterrupt(blinkLED); // Attach interrupt for blinking
+  Timer1.start();
+}
+
+void loop() {
+  // Read voltage from LM35
+  double voltage = analogRead(sensorPin) * 5.0 / 1023.0;
+
+  // Convert voltage to temperature (Celsius)
+  temperature = (voltage - 0.5) * 100;
+
+  // Update blink interval based on temperature
+  if (temperature < 30) {
+    blinkInterval = 250;
+  } else {
+    blinkInterval = 500;
+  }
+
+  // Timer will handle blinking at the set interval
+}
+
+void blinkLED() {
+  digitalWrite(ledPin, !digitalRead(ledPin)); // Toggle LED state
+  Timer1.write(blinkInterval); // Update timer for next blink
+}
+
+
